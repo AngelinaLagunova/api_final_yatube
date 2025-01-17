@@ -4,6 +4,27 @@ from django.db import models
 User = get_user_model()
 
 
+class Group(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(User,
+                             related_name='followers',
+                             on_delete=models.CASCADE)
+    following = models.ForeignKey(User,
+                                  related_name='following',
+                                  on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} follows {self.following.username}"
+
+
 class Post(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
@@ -11,6 +32,10 @@ class Post(models.Model):
         User, on_delete=models.CASCADE, related_name='posts')
     image = models.ImageField(
         upload_to='posts/', null=True, blank=True)
+    group = models.ForeignKey(
+        Group, on_delete=models.SET_NULL,
+        related_name='posts', blank=True, null=True
+    )
 
     def __str__(self):
         return self.text
