@@ -23,9 +23,12 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    following = serializers.ReadOnlyField(source='following.username')
+
     class Meta:
         model = Follow
-        fields = '__all__'
+        fields = ('id', 'user', 'following')
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -44,5 +47,6 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'author', 'post', 'text', 'created')
         model = Comment
+        read_only_fields = ('author',)
